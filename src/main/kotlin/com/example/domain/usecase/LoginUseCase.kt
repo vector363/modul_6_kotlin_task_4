@@ -1,22 +1,22 @@
 package com.example.domain.usecase
 
 import com.example.domain.model.User
-import com.example.domain.repository.NobelPrizeRepository
+import com.example.domain.repository.UserRepository
 import com.example.security.JwtConfig
+import com.example.security.PasswordHasher
 
 class LoginUseCase(
-    private val repository: NobelPrizeRepository
+    private val userRepository: UserRepository
 ) {
-    fun execute(username: String, password: String): String? {
-        val user = repository.getUserByUsername(username)
-        return if (user != null && user.password == password) {
-            JwtConfig.generateToken(user.id, user.username)
+    suspend fun execute(username: String, password: String): String? {
+        val user = userRepository.findByUsername(username) ?: return null
+
+        return if (PasswordHasher.verify(password, user.passwordHash)) {
+            JwtConfig.generateToken(user.id, user.username, user.role)
         } else {
             null
         }
     }
 
-    fun getUser(username: String): User? {
-        return repository.getUserByUsername(username)
-    }
+    suspend fun getUser(username: String) = userRepository.findByUsername(username)
 }

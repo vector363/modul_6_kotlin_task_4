@@ -46,6 +46,33 @@ dependencies {
     // CallLogging
     implementation("io.ktor:ktor-server-call-logging-jvm:2.3.12")
     implementation("ch.qos.logback:logback-classic:1.4.14")
+
+    // Exposed (ORM для PostgreSQL)
+    implementation("org.jetbrains.exposed:exposed-core:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.55.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
+
+    // PostgreSQL драйвер
+    implementation("org.postgresql:postgresql:42.7.4")
+
+    // HikariCP (пул соединений)
+    implementation("com.zaxxer:HikariCP:6.0.0")
+
+    // BCrypt (хэширование паролей)
+    implementation("at.favre.lib:bcrypt:0.10.2")
+
+    // Для работы с датами (опционально)
+    implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
+
+    // BCrypt для хэширования паролей
+    implementation("at.favre.lib:bcrypt:0.10.2")
+
+    // Ktor client для HTTP запросов к Nobel API
+    implementation("io.ktor:ktor-client-core:2.3.12")
+    implementation("io.ktor:ktor-client-cio:2.3.12")
+    implementation("io.ktor:ktor-client-content-negotiation:2.3.12")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.12")
 }
 
 tasks.withType<KotlinCompile> {

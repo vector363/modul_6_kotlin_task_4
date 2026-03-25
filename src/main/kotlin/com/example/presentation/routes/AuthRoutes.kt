@@ -3,16 +3,22 @@ package com.example.presentation.routes
 import com.example.domain.usecase.LoginUseCase
 import com.example.presentation.models.LoginRequest
 import com.example.presentation.models.LoginResponse
-import com.example.data.repository.NobelPrizeRepositoryImpl
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import com.example.data.repository.UserRepositoryImpl
+import com.example.domain.usecase.GetUserUseCase
+import com.example.presentation.models.RegisterRequest
+import com.example.security.JwtConfig
+import com.example.security.PasswordHasher
+
 
 fun Route.authRoutes() {
-    val repository = NobelPrizeRepositoryImpl()
-    val loginUseCase = LoginUseCase(repository)
+    val userRepository = UserRepositoryImpl()
+    val loginUseCase = LoginUseCase(userRepository)
+    val getUserUseCase = GetUserUseCase(userRepository)
 
     route("/auth") {
         post("/login") {
@@ -36,6 +42,38 @@ fun Route.authRoutes() {
                     mapOf("error" to "Invalid username or password")
                 )
             }
+        }
+
+        post("/register") {
+            val request = call.receive<RegisterRequest>()
+
+            // Проверяем, существует ли пользователь
+            val existingUser = loginUseCase.getUser(request.username)
+            if (existingUser != null) {
+                call.respond(HttpStatusCode.Conflict, mapOf("error" to "User already exists"))
+                return@post
+            }
+
+            // Создаем пользователя
+            val passwordHash = PasswordHasher.hash(request.password)
+            val newUser = userRepository.createUser(
+                username = request.username,
+                email = request.email,
+                passwordHash = passwordHash
+            )
+
+            // Генерируем токен
+            val token = JwtConfig.generateToken(newUser.id, newUser.username, newUser.role)
+
+            call.respond(
+                HttpStatusCode.Created,
+                LoginResponse(
+                    token = token,
+                    userId = newUser.id,
+                    username = newUser.username,
+                    email = newUser.email ?: ""
+                )
+            )
         }
     }
 }
