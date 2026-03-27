@@ -37,17 +37,17 @@ data class ApiLaureate(
     @SerialName("id")
     val id: String,
     @SerialName("fullName")
-    val fullName: FullName? = null,  // ← nullable
+    val fullName: FullName? = null,
     @SerialName("knownName")
-    val knownName: KnownName? = null,  // ← добавил knownName
+    val knownName: KnownName? = null,
     @SerialName("orgName")
-    val orgName: OrgName? = null,  // ← добавил для организаций
+    val orgName: OrgName? = null,
     @SerialName("motivation")
     val motivation: Motivation? = null,
     @SerialName("portion")
     val portion: String,
     @SerialName("birth")
-    val birth: Birth? = null  // ← сделал nullable
+    val birth: Birth? = null
 )
 
 @Serializable
