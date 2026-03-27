@@ -20,14 +20,14 @@ fun Route.prizeRoutes() {
 
     route("/prizes") {
         authenticate {
-            // GET /prizes - список всех премий
+            //get /prizes
             get {
                 val prizes = getPrizesUseCase.execute()
                 val response = prizes.map { PrizeResponse.fromDomain(it) }
                 call.respond(response)
             }
 
-            // GET /prizes/{year}/{category} - детальная премия
+            //get /prizes/{year}/{category}
             get("/{year}/{category}") {
                 val year = call.parameters["year"] ?: throw IllegalArgumentException("Year is required")
                 val category = call.parameters["category"] ?: throw IllegalArgumentException("Category is required")
@@ -43,7 +43,7 @@ fun Route.prizeRoutes() {
                 }
             }
 
-            // GET /prizes/{year}/{category}/laureates - список лауреатов премии
+            //get /prizes/{year}/{category}/laureates
             get("/{year}/{category}/laureates") {
                 val year = call.parameters["year"] ?: throw IllegalArgumentException("Year is required")
                 val category = call.parameters["category"] ?: throw IllegalArgumentException("Category is required")

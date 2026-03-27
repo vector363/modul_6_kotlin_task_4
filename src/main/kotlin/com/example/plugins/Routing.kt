@@ -7,7 +7,7 @@ import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
     routing {
-        authRoutes()
-        prizeRoutes()
+        authRoutes() //post
+        prizeRoutes() //get
     }
 }
