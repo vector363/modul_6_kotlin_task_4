@@ -17,14 +17,13 @@ object DatabaseFactory {
             password = "npg_0OpVfUetZF4l"
             driverClassName = "org.postgresql.Driver"
 
-            // Настройки пула для Neon
+
             maximumPoolSize = 10
             minimumIdle = 2
-            connectionTimeout = 30000  // 30 секунд
-            maxLifetime = 1800000      // 30 минут
-            idleTimeout = 300000       // 5 минут
+            connectionTimeout = 30000
+            maxLifetime = 1800000
+            idleTimeout = 300000
 
-            // Дополнительные параметры для Neon
             addDataSourceProperty("socketTimeout", "30")
             addDataSourceProperty("tcpKeepAlive", "true")
         }
@@ -32,7 +31,6 @@ object DatabaseFactory {
         val dataSource = HikariDataSource(config)
         Database.connect(dataSource)
 
-        // Создаем таблицы
         transaction {
             SchemaUtils.createMissingTablesAndColumns(
                 UsersTable,
@@ -40,12 +38,9 @@ object DatabaseFactory {
                 LaureatesTable,
                 UserPrizesTable
             )
-            println("Database tables created/verified")
         }
         runBlocking {
             DataInitializer.initializeData()
         }
     }
-
-
 }

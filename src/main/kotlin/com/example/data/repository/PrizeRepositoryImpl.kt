@@ -33,7 +33,6 @@ class PrizeRepositoryImpl : PrizeRepository {
     }
 
     override suspend fun savePrize(prize: Prize) = newSuspendedTransaction {
-        // Проверяем, существует ли уже такая премия
         val existingPrize = PrizesTable
             .selectAll()
             .where { (PrizesTable.awardYear eq prize.awardYear) and (PrizesTable.category eq prize.category) }
@@ -42,7 +41,6 @@ class PrizeRepositoryImpl : PrizeRepository {
         val prizeId = if (existingPrize != null) {
             existingPrize[PrizesTable.id]
         } else {
-            // Вставляем новую премию и получаем ID
             val insertStatement = PrizesTable.insert {
                 it[PrizesTable.awardYear] = prize.awardYear
                 it[PrizesTable.category] = prize.category
@@ -52,7 +50,6 @@ class PrizeRepositoryImpl : PrizeRepository {
             insertStatement[PrizesTable.id] ?: throw Exception("Failed to get generated ID")
         }
 
-        // Сохраняем лауреатов с привязкой к prizeId
         for (laureate: Laureate in prize.laureates) {
             val existingLaureate = LaureatesTable
                 .selectAll()
@@ -85,7 +82,6 @@ class PrizeRepositoryImpl : PrizeRepository {
             it[UserPrizesTable.prizeId] = prizeId
             it[UserPrizesTable.addedAt] = System.currentTimeMillis()
         }
-        // Явно возвращаем Unit
         Unit
     }
 

@@ -27,7 +27,6 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override suspend fun createUser(username: String, email: String, passwordHash: String): User = newSuspendedTransaction {
-        // Вставляем пользователя
         UsersTable.insert {
             it[UsersTable.username] = username
             it[UsersTable.email] = email
@@ -36,7 +35,6 @@ class UserRepositoryImpl : UserRepository {
             it[UsersTable.createdAt] = System.currentTimeMillis()
         }
 
-        // Получаем созданного пользователя по username
         val createdUser = UsersTable
             .selectAll()
             .where { UsersTable.username eq username }

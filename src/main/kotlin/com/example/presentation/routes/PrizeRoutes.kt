@@ -22,14 +22,12 @@ fun Route.prizeRoutes() {
 
     route("/prizes") {
         authenticate {
-            // GET /prizes - список всех премий
             get {
                 val prizes = getAllPrizesUseCase.execute()
                 val response = prizes.map { PrizeResponse.fromDomain(it) }
                 call.respond(response)
             }
 
-            // GET /prizes/{year}/{category} - детальная премия
             get("/{year}/{category}") {
                 val year = call.parameters["year"] ?: throw IllegalArgumentException("Year is required")
                 val category = call.parameters["category"] ?: throw IllegalArgumentException("Category is required")
@@ -44,8 +42,6 @@ fun Route.prizeRoutes() {
                     )
                 }
             }
-
-            // GET /prizes/{year}/{category}/laureates - список лауреатов
             get("/{year}/{category}/laureates") {
                 val year = call.parameters["year"] ?: throw IllegalArgumentException("Year is required")
                 val category = call.parameters["category"] ?: throw IllegalArgumentException("Category is required")
@@ -64,10 +60,8 @@ fun Route.prizeRoutes() {
         }
     }
 
-    // Защищенные эндпоинты для избранного
     route("/users/me") {
         authenticate {
-            // GET /users/me/prizes - избранные премии
             get("/prizes") {
                 val principal = call.principal<JWTPrincipal>()
                 val userId = principal?.payload?.getClaim("userId")?.asInt() ?:
@@ -78,7 +72,6 @@ fun Route.prizeRoutes() {
                 call.respond(response)
             }
 
-            // POST /users/me/prizes/{prizeId} - добавить в избранное
             post("/prizes/{prizeId}") {
                 val principal = call.principal<JWTPrincipal>()
                 val userId = principal?.payload?.getClaim("userId")?.asInt() ?:
@@ -90,7 +83,6 @@ fun Route.prizeRoutes() {
                 call.respond(HttpStatusCode.Created, mapOf("message" to "Added to favorites"))
             }
 
-            // DELETE /users/me/prizes/{prizeId} - удалить из избранного
             delete("/prizes/{prizeId}") {
                 val principal = call.principal<JWTPrincipal>()
                 val userId = principal?.payload?.getClaim("userId")?.asInt() ?:

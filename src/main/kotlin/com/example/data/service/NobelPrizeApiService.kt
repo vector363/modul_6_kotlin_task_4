@@ -23,7 +23,7 @@ data class ApiNobelPrize(
     @SerialName("dateAwarded")
     val dateAwarded: String?,
     @SerialName("laureates")
-    val laureates: List<ApiLaureate>? = null  // ← сделал nullable
+    val laureates: List<ApiLaureate>? = null
 )
 
 @Serializable
@@ -91,7 +91,6 @@ data class Place(
 )
 
 object NobelPrizeApiService {
-
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
@@ -123,7 +122,6 @@ object NobelPrizeApiService {
             prizeAmount = apiPrize.prizeAmount,
             dateAwarded = apiPrize.dateAwarded,
             laureates = apiPrize.laureates?.map { apiLaureate ->
-                // Получаем имя из доступных полей
                 val name = when {
                     apiLaureate.fullName?.en != null -> apiLaureate.fullName.en
                     apiLaureate.knownName?.en != null -> apiLaureate.knownName.en
@@ -131,10 +129,8 @@ object NobelPrizeApiService {
                     else -> "Unknown"
                 }
 
-                // Получаем мотивацию
                 val motivation = apiLaureate.motivation?.en ?: "No description"
 
-                // Формируем место рождения
                 val birthPlace = apiLaureate.birth?.place?.let {
                     listOfNotNull(it.city, it.country).joinToString(", ")
                 } ?: "Unknown"
